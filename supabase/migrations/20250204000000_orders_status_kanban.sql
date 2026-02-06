@@ -1,2 +1,0 @@
--- Опционально: привести старые статусы к канбан-набору (new, in_progress, ready, completed, cancelled)
--- update orders set status = 'in_progress' where status in ('accepted', 'preparing');

@@ -50,16 +50,16 @@ export function KanbanBoard() {
   const fetchOrders = useCallback(async () => {
     if (!isSupabaseConfigured()) return;
     const supabase = getSupabaseClient();
-    const { data, err } = await supabase
-      .from("orders")
-      .select("id, items, total, status, created_at, updated_at")
-      .order("updated_at", { ascending: false });
+    const { data, error } = await supabase
+  .from("orders")
+  .select("id, items, total, status, created_at, updated_at")
+  .order("updated_at", { ascending: false });
 
-    if (err) {
-      setError(err.message);
-      setOrders([]);
-      return;
-    }
+if (error) {
+  console.error("Supabase error:", error);
+  return;
+}
+
     setOrders((data ?? []) as Order[]);
     setError(null);
   }, []);
