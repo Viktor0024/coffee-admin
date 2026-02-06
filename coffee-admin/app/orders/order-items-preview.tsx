@@ -15,12 +15,45 @@ type OrderItemsPreviewProps = {
 /** Эвристика иконки по названию (опционально) */
 function itemIcon(name: string): string {
   const n = name.toLowerCase();
-  if (
-    /coffee|espresso|cappuccino|latte|americano|mocha|tea|чай|кофе/.test(n)
-  ) return "☕";
-  if (
-    /cake|cheesecake|dessert|десерт|торт|печенье|cookie|muffin|кекс/.test(n)
-  ) return "🧁";
+  
+  // Кава
+  if (/espresso|еспресо/.test(n)) return "☕";
+  if (/latte|лате/.test(n)) return "☕";
+  if (/cappuccino|капучино/.test(n)) return "☕";
+  if (/americano|американо/.test(n)) return "☕";
+  if (/mocha|мокачино|мока/.test(n)) return "☕";
+  if (/flat.white|флет.вайт|флет/.test(n)) return "☕";
+  if (/macchiato|макіато/.test(n)) return "☕";
+  if (/coffee|кофе/.test(n)) return "☕";
+  
+  // Чай
+  if (/green.tea|зелений.чай/.test(n)) return "🫖";
+  if (/black.tea|чорний.чай/.test(n)) return "🫖";
+  if (/iced.tea|холодний.чай/.test(n)) return "🧊";
+  if (/earl.grey|айрл.грей/.test(n)) return "🫖";
+  if (/chamomile|ромашковий/.test(n)) return "🫖";
+  if (/mint|м'ятний|мятний/.test(n)) return "🫖";
+  if (/tea|чай/.test(n)) return "🫖";
+  
+  // Десерти
+  if (/pancake|млинці|блини/.test(n)) return "🥞";
+  if (/croissant|круасан/.test(n)) return "🥐";
+  if (/cheesecake|чізкейк|чизкейк/.test(n)) return "🍰";
+  if (/brownie|брауні/.test(n)) return "🍫";
+  if (/muffin|мафін/.test(n)) return "🧁";
+  if (/tiramisu|тірамісу/.test(n)) return "🍰";
+  if (/cake|торт|кекс/.test(n)) return "🧁";
+  if (/dessert|десерт/.test(n)) return "🧁";
+  
+  // Морозиво
+  if (/vanilla|ваніль/.test(n)) return "🍦";
+  if (/chocolate|шоколад/.test(n)) return "🍫";
+  if (/strawberry|полуниця|клубника/.test(n)) return "🍓";
+  if (/pistachio|фісташка|фисташка/.test(n)) return "🍦";
+  if (/caramel|карамель/.test(n)) return "🍮";
+  if (/ice.cream|морозиво/.test(n)) return "🍦";
+  
+  // За замовчуванням
   return "🍽";
 }
 
