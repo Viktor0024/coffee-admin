@@ -1,0 +1,20 @@
+# Render Blueprint: один Web Service — Next.js админка + API для мобильного приложения.
+# Деплой: Render Dashboard → New → Blueprint → подключите репозиторий и выберите этот файл.
+# Либо создайте Web Service вручную по инструкции в RENDER_DEPLOY.md.
+
+services:
+  - type: web
+    name: coffee-admin
+    runtime: node
+    # Корневая папка приложения (монорепо: проект в подпапке)
+    rootDir: coffee-admin
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+    # Render сам задаёт PORT; Next.js использует process.env.PORT при next start
