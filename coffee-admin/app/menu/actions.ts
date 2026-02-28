@@ -64,7 +64,7 @@ export async function createCategory(name: string, image: string): Promise<{ err
 
 export async function updateCategory(
   id: string,
-  data: { name?: string; image?: string; sort_order?: number }
+  data: { name?: string; image?: string; sort_order?: number; active?: boolean }
 ): Promise<{ error: string | null }> {
   try {
     const supabase = getSupabaseClient();
@@ -108,7 +108,7 @@ export async function createItem(
 
 export async function updateItem(
   id: string,
-  data: { name?: string; price?: number; image_url?: string | null; sort_order?: number }
+  data: { name?: string; price?: number; image_url?: string | null; sort_order?: number; active?: boolean }
 ): Promise<{ error: string | null }> {
   try {
     const supabase = getSupabaseClient();

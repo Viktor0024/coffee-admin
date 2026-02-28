@@ -20,6 +20,7 @@ export type MenuCategoryDb = {
   name: string;
   image: string;
   sort_order: number;
+  active?: boolean;
   created_at?: string;
   updated_at?: string;
 };
@@ -31,6 +32,7 @@ export type MenuItemDb = {
   price: number;
   image_url: string | null;
   sort_order: number;
+  active?: boolean;
   created_at?: string;
   updated_at?: string;
 };

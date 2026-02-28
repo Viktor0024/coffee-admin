@@ -10,7 +10,7 @@ export async function GET(_req: NextRequest) {
     const supabase = getSupabaseClient();
     const { data: categories, error: catError } = await supabase
       .from("menu_categories")
-      .select("id, name, image, sort_order")
+      .select("*")
       .order("sort_order", { ascending: true });
 
     if (catError) {
@@ -20,7 +20,7 @@ export async function GET(_req: NextRequest) {
 
     const { data: items, error: itemsError } = await supabase
       .from("menu_items")
-      .select("id, category_id, name, price, image_url, sort_order")
+      .select("*")
       .order("sort_order", { ascending: true });
 
     if (itemsError) {
@@ -28,13 +28,18 @@ export async function GET(_req: NextRequest) {
       return Response.json({ error: "Failed to load menu." }, { status: 500 });
     }
 
-    const catList = (categories ?? []).map((c: { id: string; name: string; image: string; sort_order: number }) => ({
+    type CatRow = { id: string; name: string; image: string; sort_order: number; active?: boolean };
+    type ItemRow = { id: string; category_id: string; name: string; price: number; image_url: string | null; sort_order: number; active?: boolean };
+    const cats = (categories ?? []) as CatRow[];
+    const allItems = (items ?? []) as ItemRow[];
+    const activeCats = cats.filter((c) => c.active !== false);
+    const catList = activeCats.map((c) => ({
       id: c.id,
       name: c.name,
       image: c.image ?? "",
-      items: (items ?? [])
-        .filter((i: { category_id: string }) => i.category_id === c.id)
-        .map((i: { id: string; category_id: string; name: string; price: number; image_url: string | null }) => ({
+      items: allItems
+        .filter((i) => i.category_id === c.id && i.active !== false)
+        .map((i) => ({
           id: i.id,
           name: i.name,
           price: Number(i.price),

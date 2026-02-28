@@ -23,6 +23,16 @@ export default function MenuPage() {
   const [addingItemFor, setAddingItemFor] = useState<string | null>(null);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+
+  const toggleCategoryCollapsed = (id: string) => {
+    setCollapsedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const fetchMenu = useCallback(async () => {
     setLoading(true);
@@ -117,8 +127,20 @@ export default function MenuPage() {
   };
 
   const handleDeleteItem = async (item: MenuItemDb) => {
-    if (!confirm(`Видалити «${item.name}»?`)) return;
+    if (!confirm(`Видалити «${item.name}» назавжди?`)) return;
     const { error: err } = await deleteItem(item.id);
+    if (!err) fetchMenu();
+    else setError(err);
+  };
+
+  const handleBlockCategory = async (id: string, active: boolean) => {
+    const { error: err } = await updateCategory(id, { active });
+    if (!err) fetchMenu();
+    else setError(err);
+  };
+
+  const handleBlockItem = async (id: string, active: boolean) => {
+    const { error: err } = await updateItem(id, { active });
     if (!err) fetchMenu();
     else setError(err);
   };
@@ -168,8 +190,14 @@ export default function MenuPage() {
         </p>
       )}
 
-      {menu.map((cat) => (
-        <section key={cat.id} className={styles.categoryCard}>
+      {menu.map((cat) => {
+        const isBlocked = cat.active === false;
+        const isCollapsed = collapsedCategories.has(cat.id);
+        return (
+        <section
+          key={cat.id}
+          className={`${styles.categoryCard} ${isBlocked ? styles.categoryCardBlocked : ""}`}
+        >
           <div className={styles.categoryHeader}>
             <div className={styles.categoryImageWrap}>
               {cat.image ? (
@@ -223,7 +251,10 @@ export default function MenuPage() {
               </form>
             ) : (
               <>
-                <h2 className={styles.categoryTitle}>{cat.name}</h2>
+                <h2 className={styles.categoryTitle}>
+                  {cat.name}
+                  {isBlocked && <span className={styles.blockedBadge}>Заблоковано</span>}
+                </h2>
                 <div className={styles.categoryActions}>
                   <button
                     type="button"
@@ -239,6 +270,23 @@ export default function MenuPage() {
                   >
                     Редагувати
                   </button>
+                  {isBlocked ? (
+                    <button
+                      type="button"
+                      className={`${styles.btn} ${styles.btnPrimary}`}
+                      onClick={() => handleBlockCategory(cat.id, true)}
+                    >
+                      Розблокувати
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className={`${styles.btn} ${styles.btnSecondary}`}
+                      onClick={() => handleBlockCategory(cat.id, false)}
+                    >
+                      Заблокувати
+                    </button>
+                  )}
                   <button
                     type="button"
                     className={`${styles.btn} ${styles.btnDanger}`}
@@ -251,9 +299,23 @@ export default function MenuPage() {
             )}
           </div>
 
+          <div className={styles.itemsSectionHeader}>
+            <span>Позиції ({cat.items.length})</span>
+            <button
+              type="button"
+              className={styles.itemsSectionToggle}
+              onClick={() => toggleCategoryCollapsed(cat.id)}
+              aria-expanded={!isCollapsed}
+            >
+              {isCollapsed ? "▼ Розгорнути" : "▲ Згорнути"}
+            </button>
+          </div>
+
+          {!isCollapsed && (
           <ul className={styles.itemsList}>
-            {cat.items.map((item) =>
-              editingItemId === item.id ? (
+            {cat.items.map((item) => {
+              const itemBlocked = item.active === false;
+              return editingItemId === item.id ? (
                 <li key={item.id} className={`${styles.itemRow} ${styles.itemRowEditing}`}>
                   <div />
                   <form
@@ -295,7 +357,10 @@ export default function MenuPage() {
                   </form>
                 </li>
               ) : (
-                <li key={item.id} className={styles.itemRow}>
+                <li
+                  key={item.id}
+                  className={`${styles.itemRow} ${itemBlocked ? styles.itemRowBlocked : ""}`}
+                >
                   {item.image_url ? (
                     <img
                       src={item.image_url}
@@ -307,7 +372,10 @@ export default function MenuPage() {
                   ) : (
                     <div className={styles.itemThumbPlaceholder}>☕</div>
                   )}
-                  <span className={styles.itemName}>{item.name}</span>
+                  <span className={styles.itemName}>
+                    {item.name}
+                    {itemBlocked && <span className={styles.blockedBadge}>Заблоковано</span>}
+                  </span>
                   <span className={styles.itemPrice}>€{Number(item.price).toFixed(2)}</span>
                   <div className={styles.itemActions}>
                     <button
@@ -317,6 +385,23 @@ export default function MenuPage() {
                     >
                       Редагувати
                     </button>
+                    {itemBlocked ? (
+                      <button
+                        type="button"
+                        className={`${styles.btn} ${styles.btnPrimary}`}
+                        onClick={() => handleBlockItem(item.id, true)}
+                      >
+                        Розблокувати
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className={`${styles.btn} ${styles.btnSecondary}`}
+                        onClick={() => handleBlockItem(item.id, false)}
+                      >
+                        Заблокувати
+                      </button>
+                    )}
                     <button
                       type="button"
                       className={`${styles.btn} ${styles.btnDanger}`}
@@ -326,9 +411,10 @@ export default function MenuPage() {
                     </button>
                   </div>
                 </li>
-              )
-            )}
+              );
+            })}
           </ul>
+          )}
 
           {addingItemFor === cat.id && (
             <div className={styles.addItemForm}>
@@ -372,7 +458,8 @@ export default function MenuPage() {
             </div>
           )}
         </section>
-      ))}
+        );
+      })}
 
       {!loading && (
         <div className={styles.addCategoryBlock}>
