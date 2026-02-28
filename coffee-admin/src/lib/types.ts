@@ -14,3 +14,25 @@ export type Order = {
   created_at: string;
   updated_at?: string;
 };
+
+export type MenuCategoryDb = {
+  id: string;
+  name: string;
+  image: string;
+  sort_order: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type MenuItemDb = {
+  id: string;
+  category_id: string;
+  name: string;
+  price: number;
+  image_url: string | null;
+  sort_order: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type MenuCategoryWithItems = MenuCategoryDb & { items: MenuItemDb[] };
