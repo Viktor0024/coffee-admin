@@ -63,6 +63,10 @@
   border-top: 4px solid #0d9488;
 }
 
+.cardStats {
+  border-top: 4px solid #6366f1;
+}
+
 .cardIcon {
   width: 48px;
   height: 48px;
@@ -82,6 +86,11 @@
 .cardIconMenu {
   background: #ccfbf1;
   color: #0d9488;
+}
+
+.cardIconStats {
+  background: #eef2ff;
+  color: #6366f1;
 }
 
 .cardTitle {
@@ -118,4 +127,8 @@
 
 .cardMenu:hover .cardArrow {
   color: #0d9488;
+}
+
+.cardStats:hover .cardArrow {
+  color: #6366f1;
 }

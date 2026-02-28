@@ -23,6 +23,18 @@ export default function Home() {
             Відкрити <span aria-hidden>→</span>
           </span>
         </Link>
+        <Link href="/stats" className={`${styles.card} ${styles.cardStats}`}>
+          <div className={`${styles.cardIcon} ${styles.cardIconStats}`} aria-hidden>
+            📊
+          </div>
+          <h2 className={styles.cardTitle}>Статистика покупок</h2>
+          <p className={styles.cardDesc}>
+            Підсумки, виручка, топ позицій за кількістю продажів.
+          </p>
+          <span className={styles.cardArrow}>
+            Відкрити <span aria-hidden>→</span>
+          </span>
+        </Link>
         <Link href="/menu" className={`${styles.card} ${styles.cardMenu}`}>
           <div className={`${styles.cardIcon} ${styles.cardIconMenu}`} aria-hidden>
             ☕
