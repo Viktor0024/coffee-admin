@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS public.menu_items (
   price NUMERIC(10, 2) NOT NULL CHECK (price >= 0),
   image_url TEXT,
   sort_order INT NOT NULL DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT now(),
+  created_at TIMESTAMPTZ DEFAULT now(), 
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
