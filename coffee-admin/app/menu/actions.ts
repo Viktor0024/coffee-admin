@@ -1,12 +1,17 @@
 "use server";
 
-import { getSupabaseClient } from "@/lib/supabase";
+import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase";
 import type { MenuCategoryWithItems, MenuCategoryDb, MenuItemDb } from "@/lib/types";
+import { fallbackMenu } from "@/lib/fallback-menu";
 
 export async function getMenu(): Promise<{
   data: MenuCategoryWithItems[] | null;
   error: string | null;
+  isFallback?: boolean;
 }> {
+  if (!isSupabaseConfigured()) {
+    return { data: fallbackMenu, error: null, isFallback: true };
+  }
   try {
     const supabase = getSupabaseClient();
     const { data: categories, error: catError } = await supabase
@@ -14,15 +19,15 @@ export async function getMenu(): Promise<{
       .select("*")
       .order("sort_order", { ascending: true });
 
-    if (catError) return { data: null, error: catError.message };
-    if (!categories?.length) return { data: [], error: null };
+    if (catError) return { data: fallbackMenu, error: null, isFallback: true };
+    if (!categories?.length) return { data: fallbackMenu, error: null, isFallback: true };
 
     const { data: items, error: itemsError } = await supabase
       .from("menu_items")
       .select("*")
       .order("sort_order", { ascending: true });
 
-    if (itemsError) return { data: null, error: itemsError.message };
+    if (itemsError) return { data: fallbackMenu, error: null, isFallback: true };
 
     const itemsByCat = (items ?? []).reduce<Record<string, MenuItemDb[]>>((acc, item) => {
       const row = item as unknown as MenuItemDb;
@@ -37,9 +42,9 @@ export async function getMenu(): Promise<{
         items: itemsByCat[c.id] ?? [],
       })
     );
-    return { data: result, error: null };
-  } catch (e) {
-    return { data: null, error: e instanceof Error ? e.message : "Помилка завантаження меню" };
+    return { data: result, error: null, isFallback: false };
+  } catch {
+    return { data: fallbackMenu, error: null, isFallback: true };
   }
 }
 

@@ -12,30 +12,24 @@ import {
   updateItem,
   deleteItem,
 } from "./actions";
-import { isSupabaseConfigured } from "@/lib/supabase";
 import styles from "./menu.module.css";
 
 export default function MenuPage() {
   const [menu, setMenu] = useState<MenuCategoryWithItems[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFallback, setIsFallback] = useState(false);
   const [addingCategory, setAddingCategory] = useState(false);
   const [addingItemFor, setAddingItemFor] = useState<string | null>(null);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
 
   const fetchMenu = useCallback(async () => {
-    if (!isSupabaseConfigured()) {
-      setError(
-        "Supabase не налаштовано. Задайте NEXT_PUBLIC_SUPABASE_URL та NEXT_PUBLIC_SUPABASE_ANON_KEY у .env.local. Також виконайте SQL з файлу supabase-menu.sql у Supabase Dashboard."
-      );
-      setLoading(false);
-      return;
-    }
     setLoading(true);
     setError(null);
-    const { data, error: err } = await getMenu();
+    const { data, error: err, isFallback: fallback } = await getMenu();
     setLoading(false);
+    setIsFallback(fallback ?? false);
     if (err) setError(err);
     else setMenu(data ?? []);
   }, []);
@@ -129,23 +123,6 @@ export default function MenuPage() {
     else setError(err);
   };
 
-  if (!isSupabaseConfigured()) {
-    return (
-      <main className={styles.menuPage}>
-        <header className={styles.menuHeader}>
-          <Link href="/" className={styles.backLink}>
-            ← На головну
-          </Link>
-          <h1 className={styles.menuTitle}>Меню</h1>
-        </header>
-        <div className={styles.supabaseHint}>
-          Щоб керувати меню, налаштуйте Supabase у <code>.env.local</code> та виконайте SQL-міграцію{" "}
-          <strong>supabase-menu.sql</strong> у Supabase Dashboard → SQL Editor.
-        </div>
-      </main>
-    );
-  }
-
   if (loading) {
     return (
       <main className={styles.menuPage}>
@@ -168,6 +145,12 @@ export default function MenuPage() {
         </Link>
         <h1 className={styles.menuTitle}>Меню</h1>
       </header>
+
+      {isFallback && (
+        <div className={styles.supabaseHint}>
+          Меню показано з резервної копії. Щоб зберігати зміни (додавати, редагувати, видаляти), виконайте міграцію <strong>supabase-menu.sql</strong> у Supabase Dashboard → SQL Editor та перезавантажте сторінку.
+        </div>
+      )}
 
       {error && (
         <div className={styles.menuError}>
