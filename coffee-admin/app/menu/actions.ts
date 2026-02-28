@@ -129,3 +129,55 @@ export async function deleteItem(id: string): Promise<{ error: string | null }> 
     return { error: e instanceof Error ? e.message : "Помилка видалення позиції" };
   }
 }
+
+const FALLBACK_CATEGORY_NAME_TO_ID: Record<string, string> = {
+  Кава: "coffee",
+  Чай: "tea",
+  Десерти: "desserts",
+  Морозиво: "icecream",
+};
+
+/** Імпортує усі позиції з резервного меню в базу (за назвою категорії). Існуючі (категорія + назва) пропускаються. */
+export async function seedMenuItemsFromFallback(): Promise<{ error: string | null; added: number }> {
+  if (!isSupabaseConfigured()) return { error: "Supabase не налаштовано", added: 0 };
+  try {
+    const supabase = getSupabaseClient();
+    const { data: categories, error: catError } = await supabase
+      .from("menu_categories")
+      .select("id, name")
+      .order("sort_order", { ascending: true });
+    if (catError || !categories?.length) return { error: catError?.message ?? "Немає категорій", added: 0 };
+
+    const { data: existingItems } = await supabase.from("menu_items").select("category_id, name");
+    const existingSet = new Set(
+      (existingItems ?? []).map((i: { category_id: string; name: string }) => `${i.category_id}:${i.name}`)
+    );
+
+    let added = 0;
+    for (const dbCat of categories as { id: string; name: string }[]) {
+      const fallbackId = FALLBACK_CATEGORY_NAME_TO_ID[dbCat.name];
+      if (!fallbackId) continue;
+      const fallbackCat = fallbackMenu.find((c) => c.id === fallbackId);
+      if (!fallbackCat?.items?.length) continue;
+      for (const item of fallbackCat.items) {
+        const key = `${dbCat.id}:${item.name}`;
+        if (existingSet.has(key)) continue;
+        const { error: insErr } = await supabase.from("menu_items").insert({
+          category_id: dbCat.id,
+          name: item.name,
+          price: item.price,
+          image_url: item.image_url ?? null,
+          sort_order: item.sort_order,
+          active: true,
+        });
+        if (!insErr) {
+          added++;
+          existingSet.add(key);
+        }
+      }
+    }
+    return { error: null, added };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Помилка імпорту", added: 0 };
+  }
+}

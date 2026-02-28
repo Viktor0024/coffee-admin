@@ -11,6 +11,7 @@ import {
   createItem,
   updateItem,
   deleteItem,
+  seedMenuItemsFromFallback,
 } from "./actions";
 import styles from "./menu.module.css";
 
@@ -24,6 +25,8 @@ export default function MenuPage() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  const [seeding, setSeeding] = useState(false);
+  const [seedResult, setSeedResult] = useState<string | null>(null);
 
   const toggleCategoryCollapsed = (id: string) => {
     setCollapsedCategories((prev) => {
@@ -145,6 +148,19 @@ export default function MenuPage() {
     else setError(err);
   };
 
+  const handleSeedItems = async () => {
+    setSeeding(true);
+    setSeedResult(null);
+    const { error: err, added } = await seedMenuItemsFromFallback();
+    setSeeding(false);
+    if (!err) {
+      if (added > 0) {
+        setSeedResult(`Додано ${added} позицій`);
+        fetchMenu();
+      } else setSeedResult("Усі позиції вже є в базі");
+    } else setError(err);
+  };
+
   if (loading) {
     return (
       <main className={styles.menuPage}>
@@ -171,6 +187,21 @@ export default function MenuPage() {
       {isFallback && (
         <div className={styles.supabaseHint}>
           Меню показано з резервної копії. Щоб зберігати зміни (додавати, редагувати, видаляти), виконайте міграцію <strong>supabase-menu.sql</strong> у Supabase Dashboard → SQL Editor та перезавантажте сторінку.
+        </div>
+      )}
+
+      {!isFallback && (
+        <div className={styles.seedBlock}>
+          <p className={styles.seedText}>Усі позиції (кава, чай, десерти, морозиво) зберігаються в базі — їх можна блокувати та розблоковувати. Якщо позицій ще немає, імпортуйте їх одним кліком.</p>
+          <button
+            type="button"
+            className={`${styles.btn} ${styles.btnSecondary}`}
+            onClick={handleSeedItems}
+            disabled={seeding}
+          >
+            {seeding ? "Імпорт…" : "Імпортувати всі позиції з резервного меню"}
+          </button>
+          {seedResult && <p className={styles.seedResult}>{seedResult}</p>}
         </div>
       )}
 

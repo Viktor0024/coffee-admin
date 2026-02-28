@@ -377,3 +377,25 @@
 .supabaseHint a:hover {
   text-decoration: underline;
 }
+
+.seedBlock {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.seedText {
+  font-size: 0.875rem;
+  color: #166534;
+  margin: 0 0 0.75rem;
+  line-height: 1.45;
+}
+
+.seedResult {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #15803d;
+  margin: 0.5rem 0 0;
+}
