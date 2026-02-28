@@ -1,18 +1,41 @@
 import Link from "next/link";
+import styles from "./page.module.css";
 
 export default function Home() {
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui" }}>
-      <h1>Coffee Admin</h1>
-      <p>Панель адміністратора замовлень та меню.</p>
-      <ul style={{ listStyle: "none", padding: 0, marginTop: "1rem" }}>
-        <li style={{ marginBottom: "0.75rem" }}>
-          <Link href="/orders" style={{ color: "#6b5344" }}>Замовлення →</Link>
-        </li>
-        <li>
-          <Link href="/menu" style={{ color: "#6b5344" }}>Меню →</Link>
-        </li>
-      </ul>
+    <main className={styles.page}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Coffee Admin</h1>
+        <p className={styles.subtitle}>
+          Панель адміністратора замовлень та меню.
+        </p>
+      </header>
+      <nav className={styles.grid} aria-label="Головна навігація">
+        <Link href="/orders" className={`${styles.card} ${styles.cardOrders}`}>
+          <div className={`${styles.cardIcon} ${styles.cardIconOrders}`} aria-hidden>
+            📋
+          </div>
+          <h2 className={styles.cardTitle}>Замовлення</h2>
+          <p className={styles.cardDesc}>
+            Канбан-дошка: нові, в роботі, готово, завершені.
+          </p>
+          <span className={styles.cardArrow}>
+            Відкрити <span aria-hidden>→</span>
+          </span>
+        </Link>
+        <Link href="/menu" className={`${styles.card} ${styles.cardMenu}`}>
+          <div className={`${styles.cardIcon} ${styles.cardIconMenu}`} aria-hidden>
+            ☕
+          </div>
+          <h2 className={styles.cardTitle}>Меню</h2>
+          <p className={styles.cardDesc}>
+            Категорії та позиції: додавати, редагувати, блокувати.
+          </p>
+          <span className={styles.cardArrow}>
+            Відкрити <span aria-hidden>→</span>
+          </span>
+        </Link>
+      </nav>
     </main>
   );
 }

@@ -1,0 +1,121 @@
+.page {
+  min-height: 100vh;
+  background: #fafafa;
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+}
+
+.header {
+  max-width: 640px;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin: 0 0 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  max-width: 720px;
+}
+
+.card {
+  display: block;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem 1.5rem 1.5rem 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.card:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.cardOrders {
+  border-top: 4px solid #3b82f6;
+}
+
+.cardMenu {
+  border-top: 4px solid #0d9488;
+}
+
+.cardIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.cardIconOrders {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.cardIconMenu {
+  background: #ccfbf1;
+  color: #0d9488;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.02em;
+}
+
+.cardDesc {
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.45;
+  margin: 0 0 1rem;
+}
+
+.cardArrow {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.card:hover .cardArrow {
+  color: #0f172a;
+}
+
+.cardOrders:hover .cardArrow {
+  color: #1d4ed8;
+}
+
+.cardMenu:hover .cardArrow {
+  color: #0d9488;
+}
