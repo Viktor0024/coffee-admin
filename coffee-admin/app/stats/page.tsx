@@ -69,14 +69,14 @@ export default function StatsPage() {
     (async () => {
       try {
         const supabase = getSupabaseClient();
-        const { data, err } = await supabase
+        const { data, error: fetchError } = await supabase
           .from("orders")
           .select("id, items, total, status, created_at")
           .order("created_at", { ascending: false });
 
         if (cancelled) return;
-        if (err) {
-          setError(err.message);
+        if (fetchError) {
+          setError(fetchError.message);
           setOrders([]);
           return;
         }
